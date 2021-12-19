@@ -16,6 +16,7 @@ import retrofit2.Response
 class MainActivity : AppCompatActivity() {
     lateinit var adapter: NewsAdapter
     private var articles = mutableListOf<Article>()
+    var pageCount = 1
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
         setContentView(R.layout.activity_main)
@@ -32,7 +33,6 @@ class MainActivity : AppCompatActivity() {
             override fun onItemChanged(position: Int) {
                 container.setBackgroundColor(Color.parseColor(ColorPicker.getColor()))
             }
-
         })
         newsList.layoutManager = layoutManager
         getNews()
@@ -40,12 +40,11 @@ class MainActivity : AppCompatActivity() {
 
 
     private fun getNews() {
-        val news: Call<News> = NewsService.newsInstance.getHeadlines("in", "business", 1)
+        val news: Call<News> = NewsService.newsInstance.getHeadlines("in", "business", pageCount)
         news.enqueue(object : Callback<News> {
             override fun onResponse(call: Call<News>, response: Response<News>) {
                 val news: News? = response.body()
                 if (news != null) {
-                    Log.d("TEST", news.toString())
                     articles.addAll(news.articles)
                     adapter.notifyDataSetChanged()
                 }
